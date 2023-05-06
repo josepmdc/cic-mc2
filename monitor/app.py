@@ -5,12 +5,12 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from azure.cosmos import CosmosClient, PartitionKey
 
-COSMOS_ENDPOINT = os.environ["COSMOS_ENDPOINT"]
+COSMOS_ENDPOINT = "https://cic.documents.azure.com:443/"
 COSMOS_KEY = os.environ["COSMOS_KEY"]
 
 DATABASE_NAME = "monitor"
 CONTAINER_NAME = "requests"
-USAGE_LIMIT = 20
+USAGE_LIMIT = 25
 
 
 class MonitorService:
@@ -23,7 +23,7 @@ class MonitorService:
             offer_throughput=400,
         )
 
-    def check_balance(self):
+    def is_within_balance_limit(self):
         count = self.container.query_items(
             query="SELECT VALUE COUNT(1) FROM  requests c",
             enable_cross_partition_query=True,
@@ -51,5 +51,5 @@ CORS(app)
 
 @app.route("/check-balance", methods=["GET"])
 def check_balance():
-    return jsonify(service.check_balance())
+    return jsonify({ "within_balance_limit": service.is_within_balance_limit() } )
 
