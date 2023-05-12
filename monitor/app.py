@@ -10,7 +10,7 @@ COSMOS_KEY = os.environ["COSMOS_KEY"]
 
 DATABASE_NAME = "monitor"
 CONTAINER_NAME = "requests"
-USAGE_LIMIT = 25
+USAGE_LIMIT = 300
 
 
 class MonitorService:
@@ -51,5 +51,4 @@ CORS(app)
 
 @app.route("/check-balance", methods=["GET"])
 def check_balance():
-    return jsonify({ "within_balance_limit": service.is_within_balance_limit() } )
-
+    return jsonify({"within_balance_limit": service.is_within_balance_limit()})

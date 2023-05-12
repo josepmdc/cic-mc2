@@ -10,7 +10,7 @@ from azure.cognitiveservices.vision.computervision.models import OperationStatus
 from msrest.authentication import CognitiveServicesCredentials
 import requests
 
-MONITOR_URL = "http://127.0.0.1:5001/check-balance"
+MONITOR_URL = "http://monitor:5001/check-balance"
 
 vision_key = os.environ.get("VISION_KEY")
 if vision_key is None:
@@ -43,6 +43,9 @@ def check_balance():
 
 @app.route("/translate/image", methods=["POST"])
 def hello_world():
+    if request.args.get("mock") is not None:
+        return jsonify({"status": "SUCCESS", "message": "This is a mock response"}), 200
+
     if "image" not in request.files:
         return jsonify({"status": "FILE_NOT_SET", "message": "No image was sent"}), 400
 
@@ -88,4 +91,4 @@ def hello_world():
     res = requests.post(translate_endpoint, headers=headers, json=[{"text": full_text}])
     translated_text = res.json()[0]["translations"][0]["text"]
 
-    return jsonify(translated_text)
+    return jsonify({"status": "SUCCESS", "message": translated_text})

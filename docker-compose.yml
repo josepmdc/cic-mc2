@@ -1,0 +1,18 @@
+version: '3'
+services:
+  api:
+    build: ./api
+    environment:
+      TRANSLATE_KEY: ${TRANSLATE_KEY}
+      VISION_KEY: ${VISION_KEY}
+      PYTHONUNBUFFERED: "1"
+    ports:
+      - "5000:5000"
+    depends_on:
+      - monitor
+  monitor:
+    build: ./monitor
+    environment:
+      COSMOS_KEY: ${COSMOS_KEY}
+    ports:
+      - "5001:5001"
