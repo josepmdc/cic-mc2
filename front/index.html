@@ -1,16 +1,175 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>CIC - MC 2</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="css/style.css" rel="stylesheet">
-        <script src="js/index.js"></script>
-    </head>
-    <body>
-        <form id="image-form" method="POST" enctype="multipart/form-data">
-            <input type="file" name="image" accept="image/*">
-            <button type="submit">Send -></button>
-        </form>
-    </body>
+<html>
+
+<head>
+    <title>Translator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        select,
+        input[type="file"] {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Translator</h2>
+        <div class="form-group">
+            <label for="input-type">Input Type:</label>
+            <select id="input-type" onchange="toggleInput()">
+                <option value="image">Image</option>
+                <option value="text">Text</option>
+            </select>
+        </div>
+        <label for="input-lang">Input Language:</label>
+        <select id="input-lang">
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+        </select>
+        <div id="image-input" class="form-group">
+            <label for="input-image">Select an Image:</label>
+            <input type="file" accept="image/*" id="input-image">
+        </div>
+        <div id="text-input" style="display: none;" class="form-group">
+            <label for="input-text">Input Text:</label>
+            <textarea id="input-text" placeholder="Enter your text"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="output-lang">Output Language:</label>
+            <select id="output-lang">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="output-text">Translation:</label>
+            <textarea id="output-text" placeholder="Translation will appear here" readonly></textarea>
+        </div>
+        <button id="translate-btn">Translate</button>
+    </div>
+
+    <script>
+        document.getElementById("translate-btn").addEventListener("click", translate);
+
+        function toggleInput() {
+            let inputType = document.getElementById("input-type").value;
+            let textInput = document.getElementById("text-input");
+            let imageInput = document.getElementById("image-input");
+
+            if (inputType === "text") {
+                textInput.style.display = "block";
+                imageInput.style.display = "none";
+            } else if (inputType === "image") {
+                textInput.style.display = "none";
+                imageInput.style.display = "block";
+            }
+        }
+
+        function translate() {
+            let inputType = document.getElementById("input-type").value;
+            let inputLang = document.getElementById("input-lang").value;
+            let outputLang = document.getElementById("output-lang").value;
+
+            if (inputType === "text") {
+                let inputText = document.getElementById("input-text").value;
+                translateText(inputText, inputLang, outputLang);
+            } else if (inputType === "image") {
+                let inputImage = document.getElementById("input-image").files[0];
+                translateImage(inputImage, inputLang, outputLang);
+            }
+        }
+
+        function translateText(text, inputLang, outputLang) {
+            const formData = new FormData();
+            formData.append("text", text);
+            formData.append("input_lang", inputLang);
+            formData.append("output_lang", outputLang);
+
+            fetch("http://127.0.0.1:5000/translate/text", { method: "POST", body: formData, })
+                .then(response => {
+                    if (response.ok) return response.json()
+                    else throw Error(response.json().message)
+                })
+                .then(translatedText => {
+                    document.getElementById("output-text").value = translatedText.message
+                })
+                .catch(e => console.error(e))
+        }
+
+        function translateImage(image, inputLang, outputLang) {
+            const formData = new FormData();
+            formData.append("image", image);
+            formData.append("input_lang", inputLang);
+            formData.append("output_lang", outputLang);
+
+            fetch("http://127.0.0.1:5000/translate/image", { method: "POST", body: formData, })
+                .then(response => {
+                    if (response.ok) return response.json()
+                    else throw Error(response.json().message)
+                })
+                .then(translatedText => {
+                    document.getElementById("output-text").value = translatedText.message
+                })
+                .catch(e => console.error(e))
+        }
+
+    </script>
+</body>
+
 </html>

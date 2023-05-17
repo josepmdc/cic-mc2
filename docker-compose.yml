@@ -2,6 +2,7 @@ version: '3'
 services:
   api:
     build: ./api
+    image: josepm/cic-api
     environment:
       TRANSLATE_KEY: ${TRANSLATE_KEY}
       VISION_KEY: ${VISION_KEY}
@@ -12,6 +13,7 @@ services:
       - monitor
   monitor:
     build: ./monitor
+    image: josepm/cic-monitor
     environment:
       COSMOS_KEY: ${COSMOS_KEY}
     ports:
