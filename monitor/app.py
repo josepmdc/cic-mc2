@@ -25,7 +25,7 @@ class MonitorService:
 
     def is_within_balance_limit(self):
         count = self.container.query_items(
-            query="SELECT VALUE COUNT(1) FROM  requests c",
+            query="SELECT VALUE COUNT(1) FROM requests c",
             enable_cross_partition_query=True,
         ).next()
 
@@ -52,3 +52,8 @@ CORS(app)
 @app.route("/check-balance", methods=["GET"])
 def check_balance():
     return jsonify({"within_balance_limit": service.is_within_balance_limit()})
+
+
+@app.route("/ping", methods=["GET"])
+def ping():
+    return jsonify({"status": "SUCCESS", "message": "Pong"})

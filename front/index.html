@@ -146,8 +146,8 @@
                     if (response.ok) return response.json()
                     else throw Error(response.json().message)
                 })
-                .then(translatedText => {
-                    document.getElementById("output-text").value = translatedText.message
+                .then(response => {
+                    document.getElementById("output-text").value = response.message
                 })
                 .catch(e => console.error(e))
         }
@@ -163,8 +163,8 @@
                     if (response.ok) return response.json()
                     else throw Error(response.json().message)
                 })
-                .then(translatedText => {
-                    document.getElementById("output-text").value = translatedText.message
+                .then(response => {
+                    document.getElementById("output-text").value = response.message
                 })
                 .catch(e => console.error(e))
         }

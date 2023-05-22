@@ -2,16 +2,18 @@ import os
 import uuid
 import time
 import tempfile
+import requests
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from azure.cognitiveservices.vision.computervision import ComputerVisionClient
 from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes
 from msrest.authentication import CognitiveServicesCredentials
-import requests
 
 MONITOR_ENDPOINT = "http://monitor:5001/check-balance"
 CV_ENDPOINT = "https://cic-fhnw.cognitiveservices.azure.com/"
-TRANSLATE_ENDPOINT = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0"
+TRANSLATE_ENDPOINT = (
+    "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0"
+)
 
 vision_key = os.environ.get("VISION_KEY")
 if vision_key is None:
@@ -32,18 +34,22 @@ CORS(app)
 
 @app.before_request
 def check_balance():
-    print("asff")
-    # response = requests.get(MONITOR_ENDPOINT)
-    # within_balance_limit = response.json()["within_balance_limit"]
-    # if not within_balance_limit:
-    #     return jsonify({"error": "Balance exceeded. Too many requests"}), 429
+    if request.args.get("mock") is not None:
+        return jsonify({"status": "SUCCESS", "message": "This is a mock response"}), 200
+
+    response = requests.get(MONITOR_ENDPOINT)
+    within_balance_limit = response.json()["within_balance_limit"]
+    if not within_balance_limit:
+        return jsonify({"error": "Balance exceeded. Too many requests"}), 429
+
+
+@app.route("/ping", methods=["GET"])
+def ping():
+    return jsonify({"status": "SUCCESS", "message": "Pong"})
 
 
 @app.route("/translate/image", methods=["POST"])
 def translate_image():
-    if request.args.get("mock") is not None:
-        return jsonify({"status": "SUCCESS", "message": "This is a mock response"}), 200
-
     if "image" not in request.files:
         return jsonify({"status": "FILE_NOT_SET", "message": "No image was sent"}), 400
 
@@ -118,7 +124,10 @@ def translate_text():
     )
 
     if request.form.get("text") is None:
-        return jsonify({"status": "INVALID_REQUEST", "message": "No message was sent"}), 400
+        return (
+            jsonify({"status": "INVALID_REQUEST", "message": "No message was sent"}),
+            400,
+        )
 
     text = request.form.get("text")
 

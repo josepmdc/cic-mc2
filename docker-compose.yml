@@ -18,3 +18,9 @@ services:
       COSMOS_KEY: ${COSMOS_KEY}
     ports:
       - "5001:5001"
+  logger:
+    build: ./logger
+    image: josepm/cic-logger
+    depends_on:
+      - api
+      - monitor
