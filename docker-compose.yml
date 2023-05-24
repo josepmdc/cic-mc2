@@ -6,7 +6,6 @@ services:
     environment:
       TRANSLATE_KEY: ${TRANSLATE_KEY}
       VISION_KEY: ${VISION_KEY}
-      PYTHONUNBUFFERED: "1"
     ports:
       - "5000:5000"
     depends_on:
@@ -21,6 +20,8 @@ services:
   logger:
     build: ./logger
     image: josepm/cic-logger
+    environment:
+      COSMOS_KEY: ${COSMOS_KEY}
     depends_on:
       - api
       - monitor
