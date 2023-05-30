@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logger
+  labels:
+    app: logger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logger
+  template:
+    metadata:
+      labels:
+        app: logger
+    spec:
+      containers:
+        - env:
+            - name: COSMOS_KEY
+              value: ${COSMOS_KEY}
+          image: josepm/cic-logger
+          name: logger
+          resources: {}
+      restartPolicy: Always
