@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  labels:
+    app: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - env:
+            - name: TRANSLATE_KEY
+              value: ${TRANSLATE_KEY}
+            - name: VISION_KEY
+              value: ${VISION_KEY}
+          image: josepm/cic-api
+          name: api
+          ports:
+            - containerPort: 5000
+          resources: {}
+      restartPolicy: Always
