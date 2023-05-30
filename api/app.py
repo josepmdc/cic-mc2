@@ -37,10 +37,11 @@ def check_balance():
     if request.args.get("mock") is not None:
         return jsonify({"status": "SUCCESS", "message": "This is a mock response"}), 200
 
-    response = requests.get(MONITOR_ENDPOINT)
-    within_balance_limit = response.json()["within_balance_limit"]
-    if not within_balance_limit:
-        return jsonify({"error": "Balance exceeded. Too many requests"}), 429
+    if request.endpoint != "ping":
+        response = requests.get(MONITOR_ENDPOINT)
+        within_balance_limit = response.json()["within_balance_limit"]
+        if not within_balance_limit:
+            return jsonify({"error": "Balance exceeded. Too many requests"}), 429
 
 
 @app.route("/ping", methods=["GET"])
