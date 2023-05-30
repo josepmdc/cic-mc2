@@ -54,5 +54,5 @@ class LoggerService:
 service = LoggerService()
 
 scheduler = BlockingScheduler()
-scheduler.add_job(service.ping_endpoints, "interval", seconds=5)
+scheduler.add_job(service.ping_endpoints, "interval", minutes=30)
 scheduler.start()
