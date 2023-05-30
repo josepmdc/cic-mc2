@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitor
+  labels:
+    app: monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monitor
+  template:
+    metadata:
+      labels:
+        app: monitor
+    spec:
+      containers:
+        - env:
+            - name: COSMOS_KEY
+              value: ${COSMOS_KEY}
+          image: josepm/cic-monitor
+          name: monitor
+          ports:
+            - containerPort: 5001
+          resources: {}
+      restartPolicy: Always
